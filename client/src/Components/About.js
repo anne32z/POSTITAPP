@@ -1,8 +1,9 @@
-import Footer from "./Footer";
 const About = () => {
-   <Footer/>
+  return (
+    <div>
+      <h2>Jasmine</h2>
+    </div>
+  );
+};
 
-  };
-  
-  export default About;
-  
+export default About;
