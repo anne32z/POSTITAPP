@@ -40,6 +40,39 @@ app.post("/registerUser",async(req,res)=>{
         res.status(500).json({ error: "An error occurred" });
     }
 });
+//Post API for Login
+app.post("/login", async(req,res)=>{
+  try{
+    const{name,email,password}=req.body;
+    const user=await UserModel.findone({email:email});
+     if (!user){
+      return res.status(500).json({ error: "User not found." });
+     }
+     console.log(user);
+      const passwordMatch = await bcrypt.compare(password, user.password);
+
+  if (!passwordMatch) {
+
+        return res.status(401).json({ error: "Authentication failed" });
+
+      }
+
+ 
+
+      //if everything is ok, send the user and message
+
+      res.status(200).json({ user, message: "Success." });
+
+    } catch (err) {
+
+      res.status(500).json({ error: err.message });
+
+    }
+}
+
+);
+
+
 
 app.listen(3001, () => {
   console.log("You are connected");
