@@ -2,12 +2,12 @@ import { createAsyncThunk, createSlice, isPending } from "@reduxjs/toolkit";
 import { UsersData } from "../Exampledata";
 import axios from "axios";
 const initialState = { 
-  users:{},
+  user:{},
   isLoading:false,
   isSuccess:false,
   isError:false,
  };
-//create a thunk
+//create a thunk for "/registerUser"
 
 export const registerUser=createAsyncThunk("users/registerUser",
   async(userData)=>{
@@ -26,6 +26,27 @@ export const registerUser=createAsyncThunk("users/registerUser",
     }
   }
 );
+//create a thunk for "/login"
+export const login = createAsyncThunk("users/login", async (userData) => {
+
+    try {
+      const response = await axios.post("http://localhost:3001/login", {
+        email: userData.email,
+        password: userData.password,
+      });
+      const user = response.data.user;
+      console.log(response);
+      return user;
+    } catch (error) {
+      //handle the error
+      const errorMessage = "Invalid credentials";
+      alert(errorMessage);
+      throw new Error(errorMessage);
+
+    }
+
+  });
+
 
 export const userSlice = createSlice({
   name: "users", //name of the state
@@ -57,6 +78,19 @@ export const userSlice = createSlice({
     })
     .addCase(registerUser.rejected,(state)=>{
       state.isLoading=false;
+    })
+    .addCase(login.pending,(state)=>{
+      state.isLoading=true;
+    })
+    .addCase(login.fulfilled,(state,action)=>{
+      //assign the payload which is the user object return from the server after authentication
+      state.user=action.payload;
+      state.isLoading=false;
+      state.isSuccess=true;
+    })
+    .addCase(login.rejected,(state)=>{
+      state.isLoading=false;
+      state.isError=true;
     })
   },
 });

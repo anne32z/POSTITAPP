@@ -44,7 +44,7 @@ app.post("/registerUser",async(req,res)=>{
 app.post("/login", async(req,res)=>{
   try{
     const{name,email,password}=req.body;
-    const user=await UserModel.findone({email:email});
+    const user=await UserModel.findOne({email:email});
      if (!user){
       return res.status(500).json({ error: "User not found." });
      }
