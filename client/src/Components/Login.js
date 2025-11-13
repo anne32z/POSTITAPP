@@ -1,5 +1,7 @@
 import loginimage from "../Images/loginImage.jpg";
 import "../App.css";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Button,
   Col,
@@ -11,20 +13,17 @@ import {
   Form,
 } from "reactstrap";
 import { Link } from "react-router-dom";
-import { useState } from "react";
 import { login } from "../Features/UserSlice";
-import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
-
-  const [email,setemail]=useState();
+  const [email, setemail] = useState();
   const [password, setpassword] = useState();
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  //Retrieve the current value of the state from the store, name of state is users with a property user
   const user = useSelector((state) => state.users.user);
   const isSuccess = useSelector((state) => state.users.isSuccess);
   const isError = useSelector((state) => state.users.isError);
@@ -33,11 +32,11 @@ const Login = () => {
     const userData = {
       email,
       password,
-
     };
-     dispatch(login(userData));  //dispatch a login action from the user slice.
+    dispatch(login(userData));
   };
-useEffect(() => {
+
+  useEffect(() => {
     if (isError) {
       navigate("/login");
     }
@@ -47,7 +46,7 @@ useEffect(() => {
       navigate("/login");
     }
   }, [user, isError, isSuccess]);
-  
+
   return (
     <Container>
       <Form>
@@ -75,7 +74,7 @@ useEffect(() => {
                 name="password"
                 placeholder="Enter you password"
                 type="password"
-                onChange={(e)=>setpassword(e.target.value)}
+                onChange={(e) => setpassword(e.target.value)}
               />
             </FormGroup>
           </Col>
@@ -83,7 +82,7 @@ useEffect(() => {
 
         <Row>
           <Col md={3}>
-        <Button onClick={() => handleLogin()}>Login</Button>
+            <Button onClick={() => handleLogin()}>Login</Button>
           </Col>
         </Row>
 

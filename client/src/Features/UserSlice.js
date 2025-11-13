@@ -1,52 +1,58 @@
-import { createAsyncThunk, createSlice, isPending } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { UsersData } from "../Exampledata";
 import axios from "axios";
-const initialState = { 
-  user:{},
-  isLoading:false,
-  isSuccess:false,
-  isError:false,
- };
-//create a thunk for "/registerUser"
 
-export const registerUser=createAsyncThunk("users/registerUser",
-  async(userData)=>{
-    try{
-      //sends a POST request to the server along the request body object
-      const response=await axios.post("http://localhost:3001/registerUser",{
-        name:userData.name,
-        email:userData.email,
-        password:userData.password,
-      });
-      console.log(response);
-      const user=response.data.user;//retrieve the response from the server
-      return user; //return the response from the server as payload to the thunk
-    }catch(error){
-      console.log(error);
-    }
-  }
-);
-//create a thunk for "/login"
-export const login = createAsyncThunk("users/login", async (userData) => {
+//const initialState = { value: UsersData };
 
+const initialState = {
+  user: {},
+  isLoading: false,
+  isSuccess: false,
+  isError: false,
+};
+
+//Create the thunk
+export const registerUser = createAsyncThunk(
+  "users/registerUser",
+  async (userData) => {
     try {
-      const response = await axios.post("http://localhost:3001/login", {
+      const response = axios.post("http://localhost:3001/registerUser", {
+        name: userData.name,
         email: userData.email,
         password: userData.password,
       });
       const user = response.data.user;
-      console.log(response);
+
       return user;
     } catch (error) {
-      //handle the error
-      const errorMessage = "Invalid credentials";
-      alert(errorMessage);
-      throw new Error(errorMessage);
-
+      console.log(error);
     }
+  }
+);
 
-  });
+export const login = createAsyncThunk("users/login", async (userData) => {
+  try {
+    const response = await axios.post("http://localhost:3001/login", {
+      email: userData.email,
+      password: userData.password,
+    });
+    const user = response.data.user;
 
+    return user;
+  } catch (error) {
+    //handle the error
+    const errorMessage = "Invalid credentials";
+    alert(errorMessage);
+    throw new Error(errorMessage);
+  }
+});
+
+export const logout = createAsyncThunk("/users/logout", async () => {
+  try {
+    // Send a request to your server to log the user out
+    const response = await axios.post("http://localhost:3001/logout");
+  } catch (error) {}
+});
 
 export const userSlice = createSlice({
   name: "users", //name of the state
@@ -68,30 +74,43 @@ export const userSlice = createSlice({
   //     });
   //   },
   // },
-  extraReducers:(builder)=>{
+  extraReducers: (builder) => {
     builder
-    .addCase(registerUser.pending,(state)=>{
-      state.isLoading=true;
-    })
-    .addCase(registerUser.fulfilled,(state,action)=>{
-      state.isLoading=true;
-    })
-    .addCase(registerUser.rejected,(state)=>{
-      state.isLoading=false;
-    })
-    .addCase(login.pending,(state)=>{
-      state.isLoading=true;
-    })
-    .addCase(login.fulfilled,(state,action)=>{
-      //assign the payload which is the user object return from the server after authentication
-      state.user=action.payload;
-      state.isLoading=false;
-      state.isSuccess=true;
-    })
-    .addCase(login.rejected,(state)=>{
-      state.isLoading=false;
-      state.isError=true;
-    })
+      .addCase(registerUser.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(registerUser.fulfilled, (state, action) => {
+        state.isLoading = true;
+      })
+      .addCase(registerUser.rejected, (state) => {
+        state.isLoading = false;
+      })
+      .addCase(login.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(login.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.user = action.payload;
+      })
+      .addCase(login.rejected, (state) => {
+        state.isLoading = false;
+        state.isError = true;
+      })
+      .addCase(logout.pending, (state) => {
+        state.isLoading = true;
+      })
+
+      .addCase(logout.fulfilled, (state) => {
+        // Clear user data or perform additional cleanup if needed
+        state.user = {};
+        state.isLoading = false;
+        state.isSuccess = false;
+      })
+      .addCase(logout.rejected, (state) => {
+        state.isLoading = false;
+        state.isError = true;
+      });
   },
 });
 
